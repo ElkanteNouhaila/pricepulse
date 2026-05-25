@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { Pool } from 'pg';
-import productRoutes from './routes/products';
+import productRoutes from './routes/products.js';
 import { startPriceSimulation } from './jobs/priceSimulation';
 
 const app = express();
