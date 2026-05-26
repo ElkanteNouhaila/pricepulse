@@ -1,8 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { Pool } from 'pg';
-import productRoutes from './routes/products.js';
+import productRoutes from './routes/products';
 import { startPriceSimulation } from './jobs/priceSimulation';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

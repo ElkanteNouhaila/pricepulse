@@ -1,4 +1,4 @@
-import { validateUrl, validatePrice } from '../../src/utils/validation.js';
+import { validateUrl, validatePrice } from '../../src/utils/validation';
 
 describe('Validation Utils', () => {
   describe('validateUrl', () => {

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { pool } from '../index.js';
-import { validateUrl, validatePrice } from '../utils/validation.js';
+import { pool } from '../index';
+import { validateUrl, validatePrice } from '../utils/validation';
 
 const router = Router();
 
