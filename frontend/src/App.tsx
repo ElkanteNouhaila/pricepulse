@@ -16,20 +16,27 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
   const fetchProducts = async () => {
+    const scrollY = window.scrollY;
+  
     try {
       setLoading(true);
+  
       const response = await fetch(`${import.meta.env.VITE_API_URL}/products`);
       if (!response.ok) throw new Error('Failed to fetch');
+  
       const data = await response.json();
       setProducts(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load products. Is the API running?');
-      console.error(err);
+      setError('Failed to load products');
     } finally {
       setLoading(false);
+  
+      // restore scroll
+      window.scrollTo(0, scrollY);
     }
   };
 
@@ -73,15 +80,27 @@ export default function App() {
 
         {showForm && <ProductForm onAdded={handleProductAdded} />}
 
-        {loading ? (
+        {/* {loading ? (
           <div className="text-center text-gray-600">Loading...</div>
         ) : products.length === 0 ? (
           <div className="text-center text-gray-600 py-12">
             No products yet. Add one to get started!
           </div>
         ) : (
-          <Dashboard products={products} onRefresh={fetchProducts} />
-        )}
+          <Dashboard
+            products={products}
+            onRefresh={fetchProducts}
+            selectedProductId={selectedProductId}
+            setSelectedProductId={setSelectedProductId}
+          />
+        )} */}
+        <Dashboard
+          products={products}
+          onRefresh={fetchProducts}
+          selectedProductId={selectedProductId}
+          setSelectedProductId={setSelectedProductId}
+          loading={loading}
+        />
       </main>
     </div>
   );

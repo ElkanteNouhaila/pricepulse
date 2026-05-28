@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import ProductRow from './ProductRow';
 import PriceChart from './PriceChart';
 
@@ -14,10 +13,18 @@ interface Product {
 interface DashboardProps {
   products: Product[];
   onRefresh: () => void;
+  selectedProductId: number | null;
+  setSelectedProductId: React.Dispatch<React.SetStateAction<number | null>>;
+  loading: boolean;
 }
 
-export default function Dashboard({ products, onRefresh }: DashboardProps) {
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+export default function Dashboard({
+  products,
+  onRefresh,
+  selectedProductId,
+  setSelectedProductId,
+  loading
+}: DashboardProps) {
 
   return (
     <div>
@@ -56,6 +63,11 @@ export default function Dashboard({ products, onRefresh }: DashboardProps) {
             </button>
           </div>
           <PriceChart productId={selectedProductId} />
+        </div>
+      )}
+      {loading && (
+        <div className="text-sm text-gray-500 mb-2">
+          Updating prices...
         </div>
       )}
     </div>

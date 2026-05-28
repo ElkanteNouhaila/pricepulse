@@ -50,7 +50,7 @@ export default function PriceChart({ productId }: PriceChartProps) {
 
   const chartData = data.map((point ) => ({
     time: new Date(point.recorded_at).toLocaleDateString(),
-    price: parseFloat(point.price),
+    price: point.price,
   }));
 
   return (
@@ -59,7 +59,12 @@ export default function PriceChart({ productId }: PriceChartProps) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" />
         <YAxis />
-        <Tooltip formatter={(value: any) => `$${value.toFixed(2)}`} />
+        <Tooltip
+  formatter={(value: any) => {
+    const num = Number(value);
+    return isNaN(num) ? value : `$${num.toFixed(2)}`;
+  }}
+/>
         <Line
           type="monotone"
           dataKey="price"

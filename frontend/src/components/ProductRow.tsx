@@ -18,7 +18,8 @@ interface Product {
     onSelect,
     onDeleted,
   }: ProductRowProps) {
-    const change = product.current_price - product.initial_price;
+    const change =
+  Number(product.current_price) - Number(product.initial_price);
     const changePercent = (change / product.initial_price) * 100;
     const isIncrease = change > 0;
   
@@ -46,9 +47,9 @@ interface Product {
         }`}
       >
         <td className="px-4 py-3 font-medium">{product.name}</td>
-        <td className="px-4 py-3 text-right">${product.initial_price.toFixed(2)}</td>
+        <td className="px-4 py-3 text-right">${Number(product.initial_price).toFixed(2)}</td>
         <td className="px-4 py-3 text-right font-semibold">
-          ${product.current_price.toFixed(2)}
+        ${Number(product.current_price).toFixed(2)}
         </td>
         <td className={`px-4 py-3 text-center font-bold ${
           isIncrease ? 'text-red-600' : 'text-green-600'
