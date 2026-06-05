@@ -18,7 +18,7 @@ export default function ProductForm({ onAdded }: ProductFormProps) {
     setError(null);
 
     if (!formData.url || !formData.name || !formData.initial_price) {
-      setError('All fields required');
+      setError('All fields are required');
       return;
     }
 
@@ -42,7 +42,7 @@ export default function ProductForm({ onAdded }: ProductFormProps) {
       setFormData({ url: '', name: '', initial_price: '' });
       onAdded();
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,9 @@ export default function ProductForm({ onAdded }: ProductFormProps) {
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg border mb-6">
       <h3 className="text-lg font-bold mb-4">Add New Product</h3>
 
-      {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">{error}</div>}
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">{error}</div>
+      )}
 
       <div className="grid grid-cols-3 gap-4">
         <input
@@ -75,9 +77,12 @@ export default function ProductForm({ onAdded }: ProductFormProps) {
           type="number"
           placeholder="Initial Price"
           value={formData.initial_price}
-          onChange={(e) => setFormData({ ...formData, initial_price: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, initial_price: e.target.value })
+          }
           className="px-3 py-2 border rounded"
           step="0.01"
+          min="0.01"
           required
         />
       </div>
