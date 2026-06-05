@@ -23,52 +23,66 @@ export default function Dashboard({
   onRefresh,
   selectedProductId,
   setSelectedProductId,
-  loading
+  loading,
 }: DashboardProps) {
+  if (!loading && products.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-16">
+        No products tracked yet. Add one to get started!
+      </div>
+    );
+  }
 
   return (
     <div>
-      <table className="w-full border-collapse">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 text-left">Product</th>
-            <th className="px-4 py-2 text-right">Initial Price</th>
-            <th className="px-4 py-2 text-right">Current Price</th>
-            <th className="px-4 py-2 text-center">Change</th>
-            <th className="px-4 py-2 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <ProductRow
-              key={product.id}
-              product={product}
-              isSelected={selectedProductId === product.id}
-              onSelect={() => setSelectedProductId(product.id)}
-              onDeleted={onRefresh}
-            />
-          ))}
-        </tbody>
-      </table>
+      {loading && products.length === 0 ? (
+        <div className="text-center text-gray-400 py-16">Loading...</div>
+      ) : (
+        <>
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 text-left">Product</th>
+                <th className="px-4 py-2 text-right">Initial Price</th>
+                <th className="px-4 py-2 text-right">Current Price</th>
+                <th className="px-4 py-2 text-center">Change</th>
+                <th className="px-4 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  isSelected={selectedProductId === product.id}
+                  onSelect={() => setSelectedProductId(product.id)}
+                  onDeleted={onRefresh}
+                />
+              ))}
+            </tbody>
+          </table>
 
-      {selectedProductId && (
-        <div className="mt-8 p-4 bg-white border rounded-lg">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">Price History</h3>
-            <button
-              onClick={() => setSelectedProductId(null)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-          </div>
-          <PriceChart productId={selectedProductId} />
-        </div>
-      )}
-      {loading && (
-        <div className="text-sm text-gray-500 mb-2">
-          Updating prices...
-        </div>
+          {selectedProductId && (
+            <div className="mt-8 p-4 bg-white border rounded-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">Price History</h3>
+                <button
+                  onClick={() => setSelectedProductId(null)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              <PriceChart productId={selectedProductId} />
+            </div>
+          )}
+
+          {loading && (
+            <div className="text-sm text-gray-400 mt-2 text-right">
+              Refreshing...
+            </div>
+          )}
+        </>
       )}
     </div>
   );

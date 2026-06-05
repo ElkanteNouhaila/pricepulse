@@ -34,7 +34,7 @@ export default function PriceChart({ productId }: PriceChartProps) {
         const data = await response.json();
         setData(data);
         setError(null);
-      } catch  {
+      } catch {
         setError('Failed to load price history');
       } finally {
         setLoading(false);
@@ -44,13 +44,14 @@ export default function PriceChart({ productId }: PriceChartProps) {
     fetchHistory();
   }, [productId]);
 
-  if (loading) return <div>Loading chart...</div>;
-  if (error) return <div className="text-red-600">{error}</div>;
-  if (data.length === 0) return <div>No price history yet</div>;
+  if (loading) return <div className="text-gray-400 py-4">Loading chart...</div>;
+  if (error) return <div className="text-red-600 py-4">{error}</div>;
+  if (data.length === 0)
+    return <div className="text-gray-400 py-4">No price history yet</div>;
 
-  const chartData = data.map((point ) => ({
+  const chartData = data.map((point) => ({
     time: new Date(point.recorded_at).toLocaleDateString(),
-    price: point.price,
+    price: Number(point.price),
   }));
 
   return (
@@ -60,11 +61,10 @@ export default function PriceChart({ productId }: PriceChartProps) {
         <XAxis dataKey="time" />
         <YAxis />
         <Tooltip
-  formatter={(value: any) => {
-    const num = Number(value);
-    return isNaN(num) ? value : `$${num.toFixed(2)}`;
-  }}
-/>
+          formatter={(value: number) =>
+            isNaN(value) ? value : `$${value.toFixed(2)}`
+          }
+        />
         <Line
           type="monotone"
           dataKey="price"
