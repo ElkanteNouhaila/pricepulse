@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: pricepulse_db
     environment:
       POSTGRES_DB: pricepulse
@@ -27,17 +27,19 @@ services:
     environment:
       DATABASE_URL: postgresql://dev:devpass@postgres:5432/pricepulse
       NODE_ENV: production
-    command: npm start
+      PORT: 3000
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # VITE env vars are baked in at build time — must pass as build args
+        VITE_API_URL: http://localhost:3000
     container_name: pricepulse_frontend
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - backend
-    environment:
-      VITE_API_URL: http://localhost:3000
 
 volumes:
   postgres_data:
