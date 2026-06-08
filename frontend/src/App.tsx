@@ -41,7 +41,7 @@ export default function App() {
     const interval = setInterval(fetchProducts, 30000);
     return () => clearInterval(interval);
   }, []);
-  
+
   const handleProductAdded = () => {
     setShowForm(false);
     fetchProducts();
@@ -64,7 +64,7 @@ export default function App() {
         )}
 
         <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-2xl text-gray-900">Tracked Products</h2>
+          <h2 className="text-2xl font-bold">Tracked Products</h2>
           <button
             onClick={() => setShowForm(!showForm)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
