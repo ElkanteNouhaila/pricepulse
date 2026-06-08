@@ -2,7 +2,7 @@ import { validateUrl, validatePrice } from '../../src/utils/validation';
 
 describe('Validation Utils', () => {
   describe('validateUrl', () => {
-    it('accepts valid URLs', () => {
+    it('accepts valid HTTP URLs', () => {
       expect(validateUrl('https://amazon.com/product')).toBe(true);
       expect(validateUrl('http://example.com')).toBe(true);
     });
