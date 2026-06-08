@@ -4,7 +4,7 @@ Un tracker de prix de produits e-commerce avec simulateur de variation et dashbo
 
 ---
 
-## 🚀 Lancer l'application en local (Docker)
+## Lancer l'application en local (Docker)
 
 ### Prérequis
 - Docker & Docker Compose installés
@@ -38,7 +38,7 @@ docker-compose up --build
 
 ---
 
-## 🧪 Exécuter les tests
+## Exécuter les tests
 
 ### Tests unitaires (validation, logique métier)
 
@@ -77,7 +77,7 @@ npm run test:e2e
 
 ---
 
-## 📐 Choix d'architecture
+## Choix d'architecture
 
 ### Back-End — Node.js / TypeScript / Express / PostgreSQL
 
@@ -122,7 +122,7 @@ Pas de librairie de state management externe (Redux, Zustand) — les hooks nati
 
 ---
 
-## 🔮 Si j'avais eu 2 semaines de plus
+## Si j'avais eu 2 semaines de plus
 
 **Fonctionnel**
 - Authentification utilisateur (JWT) pour que chaque compte ait ses propres produits suivis
