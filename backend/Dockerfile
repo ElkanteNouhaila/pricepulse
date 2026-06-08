@@ -2,8 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Install all deps (including devDeps: ts-node, typescript) in one clean step
 COPY package*.json ./
-RUN npm ci --only=production && npm install ts-node typescript
+RUN npm ci
 
 COPY . .
 
