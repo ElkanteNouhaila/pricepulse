@@ -1,13 +1,15 @@
+jest.mock('../../src/index', () => ({
+  pool: {
+    query: jest.fn(),
+  },
+}));
+
 import express from 'express';
 import request from 'supertest';
+import { pool } from '../../src/index';
 import productRoutes from '../../src/routes/products';
 
-// ── Mock the shared pool used by routes ──────────────────────────────────────
-const mockQuery = jest.fn();
-
-jest.mock('../../src/index', () => ({
-  pool: { query: mockQuery },
-}));
+const mockQuery = pool.query as jest.Mock;
 
 // ── App setup ─────────────────────────────────────────────────────────────────
 const app = express();
