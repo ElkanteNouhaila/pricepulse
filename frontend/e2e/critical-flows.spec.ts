@@ -22,8 +22,9 @@ test.describe('PricePulse Critical Flows', () => {
     await page.click('button[type="submit"]:has-text("Add Product")');
 
     // Product must be visible in the table after the form closes
-    await expect(page.locator('text=Cool Watch')).toBeVisible({ timeout: 10_000 });
-    await expect(page.locator('text=99.99')).toBeVisible();
+    const productRow = page.locator('tr', { hasText: 'Cool Watch' });
+    await expect(productRow).toBeVisible({ timeout: 10_000 });
+    await expect(productRow).toContainText('$99.99');
   });
 
   test('delete product flow: user deletes a product and it disappears from the list', async ({ page }) => {
