@@ -15,11 +15,11 @@ Un tracker de prix de produits e-commerce avec simulateur de variation et dashbo
 docker-compose up --build
 ```
 
-| Service  | URL                        |
-|----------|----------------------------|
-| Frontend | http://localhost:5173      |
-| Backend  | http://localhost:3000      |
-| Postgres | localhost:5432             |
+| Service  | Local URL                | Production URL                           |
+|----------|--------------------------|------------------------------------------|
+| Frontend | http://localhost:5173    | https://pricepulse-gino.vercel.app/      |
+| Backend  | http://localhost:3000    | https://pricepulse-ie5p.onrender.com     |
+| Postgres | localhost:5432           | Hosted on Render PostgreSQL              |
 
 > La base de données est initialisée automatiquement au premier démarrage.
 
