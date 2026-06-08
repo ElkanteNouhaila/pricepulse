@@ -1,22 +1,20 @@
-import { Pool } from 'pg';
 import express from 'express';
 import request from 'supertest';
 import productRoutes from '../../src/routes/products';
 
-// ─── Mock the shared pool used by routes ────────────────────────────────────
-// We intercept the module so routes use our fake pool — no real DB needed.
+// ── Mock the shared pool used by routes ──────────────────────────────────────
 const mockQuery = jest.fn();
 
 jest.mock('../../src/index', () => ({
   pool: { query: mockQuery },
 }));
 
-// ─── App setup ───────────────────────────────────────────────────────────────
+// ── App setup ─────────────────────────────────────────────────────────────────
 const app = express();
 app.use(express.json());
 app.use('/products', productRoutes);
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 const VALID_PRODUCT = {
   url: 'https://amazon.com/dp/TESTPRODUCT',
   name: 'Test Product',
@@ -37,7 +35,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// ─── GET /products ────────────────────────────────────────────────────────────
+// ── GET /products ─────────────────────────────────────────────────────────────
 describe('GET /products', () => {
   it('returns an empty list when no products exist', async () => {
     mockQuery.mockResolvedValueOnce({ rows: [] });
@@ -68,10 +66,10 @@ describe('GET /products', () => {
   });
 });
 
-// ─── POST /products ───────────────────────────────────────────────────────────
+// ── POST /products ────────────────────────────────────────────────────────────
 describe('POST /products', () => {
   it('creates a product and returns 201 with the new product', async () => {
-    // First query: INSERT product — second: INSERT price_history
+    // First call: INSERT product — second call: INSERT price_history
     mockQuery
       .mockResolvedValueOnce({ rows: [DB_PRODUCT_ROW] })
       .mockResolvedValueOnce({ rows: [] });
@@ -81,7 +79,6 @@ describe('POST /products', () => {
     expect(res.status).toBe(201);
     expect(res.body.name).toBe('Test Product');
     expect(res.body.id).toBe(1);
-    // Should have called DB twice (product insert + history insert)
     expect(mockQuery).toHaveBeenCalledTimes(2);
   });
 
@@ -92,6 +89,7 @@ describe('POST /products', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.code).toBe('INVALID_URL');
+    // Validation happens before DB — no query should be made
     expect(mockQuery).not.toHaveBeenCalled();
   });
 
@@ -143,7 +141,7 @@ describe('POST /products', () => {
   });
 });
 
-// ─── DELETE /products/:id ─────────────────────────────────────────────────────
+// ── DELETE /products/:id ──────────────────────────────────────────────────────
 describe('DELETE /products/:id', () => {
   it('deletes an existing product and returns success', async () => {
     mockQuery.mockResolvedValueOnce({ rowCount: 1 });
@@ -173,7 +171,7 @@ describe('DELETE /products/:id', () => {
   });
 });
 
-// ─── GET /products/:id/history ────────────────────────────────────────────────
+// ── GET /products/:id/history ─────────────────────────────────────────────────
 describe('GET /products/:id/history', () => {
   it('returns price history for a product', async () => {
     const historyRows = [
@@ -189,7 +187,7 @@ describe('GET /products/:id/history', () => {
     expect(res.body[0].price).toBe('99.99');
   });
 
-  it('returns 404 when there is no history (product not found)', async () => {
+  it('returns 404 when there is no history', async () => {
     mockQuery.mockResolvedValueOnce({ rows: [] });
 
     const res = await request(app).get('/products/999/history');
