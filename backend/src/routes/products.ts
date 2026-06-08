@@ -4,11 +4,19 @@ import { validateUrl, validatePrice } from '../utils/validation';
 
 const router = Router();
 
-// GET /products - List all products
+// ── GET /products ─────────────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response) => {
+  const page  = Math.max(1, parseInt(req.query.page  as string) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+  const offset = (page - 1) * limit;
+
   try {
     const result = await pool.query(
-      'SELECT id, name, url, initial_price, current_price, created_at FROM products ORDER BY created_at DESC'
+      `SELECT id, name, url, initial_price, current_price, created_at
+       FROM products
+       ORDER BY created_at DESC
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
     );
     res.json(result.rows);
   } catch (err) {
@@ -17,15 +25,14 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-// POST /products - Create product
+// ── POST /products ────────────────────────────────────────────────────────────
 router.post('/', async (req: Request, res: Response) => {
   const { url, name, initial_price } = req.body;
 
-  // Validation
   if (!validateUrl(url)) {
     return res.status(400).json({ error: 'Invalid URL', code: 'INVALID_URL' });
   }
-  if (!name || name.trim().length === 0) {
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
     return res.status(400).json({ error: 'Name required', code: 'INVALID_NAME' });
   }
   if (!validatePrice(initial_price)) {
@@ -33,20 +40,22 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
+    const price = parseFloat(initial_price);
     const result = await pool.query(
-      'INSERT INTO products (url, name, initial_price, current_price) VALUES ($1, $2, $3, $4) RETURNING *',
-      [url, name, parseFloat(initial_price), parseFloat(initial_price)]
+      `INSERT INTO products (url, name, initial_price, current_price)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [url, name.trim(), price, price]
     );
 
-    // Insert initial price history
     await pool.query(
       'INSERT INTO price_history (product_id, price) VALUES ($1, $2)',
-      [result.rows[0].id, parseFloat(initial_price)]
+      [result.rows[0].id, price]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (err: any) {
-    if (err.code === '23505') { // Unique constraint violation
+    if (err.code === '23505') {
       return res.status(400).json({ error: 'URL already tracked', code: 'DUPLICATE_URL' });
     }
     console.error('Error creating product:', err);
@@ -54,13 +63,17 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-// DELETE /products/:id - Delete product
+// ── DELETE /products/:id ──────────────────────────────────────────────────────
 router.delete('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid product id', code: 'INVALID_ID' });
+  }
 
   try {
     const result = await pool.query('DELETE FROM products WHERE id = $1', [id]);
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
     }
@@ -72,21 +85,26 @@ router.delete('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// GET /products/:id/history - Get price history
+// ── GET /products/:id/history ─────────────────────────────────────────────────
 router.get('/:id/history', async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid product id', code: 'INVALID_ID' });
+  }
 
   try {
     const result = await pool.query(
-      `SELECT price, recorded_at FROM price_history 
-       WHERE product_id = $1 
-       ORDER BY recorded_at ASC 
+      `SELECT price, recorded_at
+       FROM price_history
+       WHERE product_id = $1
+       ORDER BY recorded_at ASC
        LIMIT 100`,
       [id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Product not found', code: 'NOT_FOUND' });
+      return res.status(404).json({ error: 'No history found', code: 'NOT_FOUND' });
     }
 
     res.json(result.rows);
